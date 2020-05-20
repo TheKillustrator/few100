@@ -1,3 +1,5 @@
+import { isEven, add } from '../src/utils';
+
 describe('functions', () => {
     describe('how to declar them', () => {
         it('has two types', () => {
@@ -132,5 +134,94 @@ describe('functions', () => {
                 expect(sumBig).toBe(145);
             });
         });
+    });
+});
+describe('a couple of practices', () => {
+    describe('shopping cart', () => {
+        it('the practice', () => {
+            interface CartItem {
+                name: string;
+                qty: number;
+                price: number;
+            }
+            const cart: CartItem[] = [
+                { name: 'Eggs', qty: 1, price: 2.99 },
+                { name: 'Bread', qty: 3, price: 3.57 },
+                { name: 'Shampoo', qty: 2, price: 7.25 }
+            ];
+            interface Bill {
+                totalQty: number;
+                totalPrice: number;
+            }
+
+            const initialState: Bill = {
+                totalQty: 0,
+                totalPrice: 0
+            }
+            // parentheses obviate need for 'return' keyword
+            const finalBill: Bill = cart.reduce((state: Bill, next: CartItem) => ({
+                totalQty: state.totalQty + next.qty,
+                totalPrice: state.totalPrice + next.qty * next.price
+            }), initialState)
+
+            // const finalBill: Bill = {
+            //     totalQty: cart.reduce((a: number, item: CartItem) => a + item.qty, 0),
+            //     totalPrice: cart.reduce((a: number, item: CartItem) => a + item.price * item.qty, 0)
+            // };
+
+            expect(finalBill.totalPrice).toBe(28.20);
+            expect(finalBill.totalQty).toBe(6);
+        });
+    });
+    it('bowling game', () => {
+        interface BowlingGame {
+            playerName: string;
+            score: number;
+        }
+        const games: BowlingGame[] = [
+            { playerName: 'Jeff', score: 122 },
+            { playerName: 'Henry', score: 227 },
+            { playerName: 'Stacey', score: 212 },
+            { playerName: 'Violet', score: 118 }
+        ]
+        interface Results {
+            highScore: number;
+            highScorer: string;
+            lowScore: number;
+            lowScorer: string;
+        }
+
+        const answer: Results = games.reduce((state: Results, game: BowlingGame) => ({
+            highScore: state.highScore < game.score ? game.score : state.highScore,
+            highScorer: state.highScore < game.score ? game.playerName : state.highScorer,
+            lowScore: state.lowScore > game.score ? game.score : state.lowScore,
+            lowScorer: state.lowScore > game.score ? game.playerName : state.lowScorer
+        }), {
+            highScore: -1,
+            highScorer: null,
+            lowScore: 301,
+            lowScorer: null
+        })
+
+        expect(answer.highScore).toBe(227);
+        expect(answer.highScorer).toBe('Henry');
+        expect(answer.lowScore).toBe(118);
+        expect(answer.lowScorer).toBe('Violet');
+
+        const expected = ['Henry Got 227', 'Stacey Got 212'];
+
+        const playersOver200 = games // Start with 4 BowlingGame elements
+            .filter(game => game.score >= 200) // Get the 2 qualifying BowlingGame elements
+            .map(g => `${g.playerName} Got ${g.score}`); // Convert it to a string [] with 2 elements
+
+        expect(playersOver200).toEqual(expected);
+
+        // simple map example, proving a point about single letter variables i think?
+        const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+        const summary = numbers.map(n => isEven(n) ? 'Even' : 'Odd');
+        expect(summary).toEqual(['Odd', 'Even', 'Odd', 'Even', 'Odd', 'Even', 'Odd', 'Even', 'Odd']);
+
+        const sum = numbers.reduce((total: number, next: number) => add(total, next), 0);
+        expect(sum).toBe(45);
     });
 });
